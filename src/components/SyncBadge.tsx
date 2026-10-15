@@ -1,48 +1,37 @@
-import React from 'react';
-import { View, Text, StyleSheet } from 'react-native';
-import { COLORS } from '../constants/theme';
+import { StyleSheet, Text, View } from "react-native";
+import { COLORS } from "../constants/theme";
+import type { SyncStatus } from "../services/sync";
 
-interface SyncBadgeProps {
-  status: 'synced' | 'syncing' | 'error';
-}
+const COLOR: Record<SyncStatus, string> = {
+  synced: COLORS.success,
+  syncing: COLORS.accent,
+  offline: COLORS.textSecondary,
+};
 
-export const SyncBadge = ({ status }: SyncBadgeProps) => {
-  const getStatusColor = () => {
-    switch (status) {
-      case 'synced': return COLORS.success;
-      case 'syncing': return COLORS.accent;
-      case 'error': return COLORS.error;
-      default: return COLORS.textSecondary;
-    }
-  };
+const LABEL: Record<SyncStatus, string> = {
+  synced: "Synced",
+  syncing: "Syncing...",
+  offline: "Offline",
+};
 
-  const getStatusText = () => {
-    switch (status) {
-      case 'synced': return 'Synced';
-      case 'syncing': return 'Syncing...';
-      case 'error': return 'Sync Error';
-      default: return 'Unknown';
-    }
-  };
-
+export const SyncBadge = ({ status }: { status: SyncStatus }) => {
+  const color = COLOR[status];
   return (
-    <View style={[styles.badge, { backgroundColor: getStatusColor() + '20' }]}>
-      <View style={[styles.dot, { backgroundColor: getStatusColor() }]} />
-      <Text style={[styles.text, { color: getStatusColor() }]}>
-        {getStatusText()}
-      </Text>
+    <View style={[styles.badge, { backgroundColor: `${color}20` }]}>
+      <View style={[styles.dot, { backgroundColor: color }]} />
+      <Text style={[styles.text, { color }]}>{LABEL[status]}</Text>
     </View>
   );
 };
 
 const styles = StyleSheet.create({
   badge: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     paddingHorizontal: 8,
     paddingVertical: 4,
     borderRadius: 12,
-    alignSelf: 'flex-start',
+    alignSelf: "flex-start",
   },
   dot: {
     width: 6,
@@ -52,6 +41,6 @@ const styles = StyleSheet.create({
   },
   text: {
     fontSize: 12,
-    fontWeight: '600',
+    fontWeight: "600",
   },
 });

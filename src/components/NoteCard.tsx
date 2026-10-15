@@ -1,10 +1,9 @@
 import { useRouter } from "expo-router";
 import { StyleSheet, Text, TouchableOpacity } from "react-native";
 import { COLORS } from "../constants/theme";
-import { Note } from "../types/note";
 
 interface NoteCardProps {
-  note: Note;
+  note: { id: string; title: string; body: string; updatedAt: number };
 }
 
 export const NoteCard = ({ note }: NoteCardProps) => {

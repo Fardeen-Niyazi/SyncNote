@@ -28,33 +28,16 @@ export default function NoteEditorScreen() {
 
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
-  const [isLoading, setIsLoading] = useState(false);
-  
 
   useEffect(() => {
-    const fetchNote = async () => {
-      if (id !== "new") {
-        const note = await getNotebyId(id);
-        if (note) {
-          setTitle(note.title);
-          setContent(note.body);
-        }
+    if (id === "new") return;
+    getNotebyId(id).then((note) => {
+      if (note) {
+        setTitle(note.title);
+        setContent(note.body);
       }
-    };
-
-    fetchNote();
-    }, [id]);
-
-  async function handleAddNote() {
-    if (id === "new") {
-      console.log("Title : ", title);
-      console.log("Content : ", content);
-      await createNote(title, content);
-    } else {
-      // Update existing note logic here
-      await updateNote(id, title, content);
-    }
-  }
+    });
+  }, [id]);
 
   async function handleSave() {
     if (!title.trim() && !content.trim()) {
@@ -64,7 +47,11 @@ export default function NoteEditorScreen() {
       );
       return;
     }
-    await handleAddNote();
+    if (id === "new") {
+      await createNote(title, content);
+    } else {
+      await updateNote(id, title, content);
+    }
     router.back();
   }
 
@@ -85,14 +72,6 @@ export default function NoteEditorScreen() {
           },
         },
       ],
-    );
-  }
-
-  if (isLoading) {
-    return (
-      <View style={styles.centered}>
-        <Text style={{ color: COLORS.textSecondary }}>Loading...</Text>
-      </View>
     );
   }
 
@@ -140,12 +119,6 @@ const styles = StyleSheet.create({
   scrollContent: {
     flexGrow: 1,
     padding: 16,
-  },
-  centered: {
-    flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
-    backgroundColor: COLORS.background,
   },
   titleInput: {
     fontSize: 24,

@@ -25,7 +25,6 @@ export default function RootLayout() {
             (route.params as any)?.id === "new" ? "Create Note" : "Edit Note",
         })}
       />
-      <Stack.Screen name="sync" options={{ title: "Sync Status" }} />
     </Stack>
   );
 }

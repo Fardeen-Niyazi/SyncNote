@@ -1,4 +1,5 @@
 import { useNotes } from "@/hooks/useNotes";
+import { useSync } from "@/hooks/useSync";
 import { useRouter } from "expo-router";
 import { useMemo, useState } from "react";
 import {
@@ -18,6 +19,7 @@ import { COLORS } from "../constants/theme";
 
 export default function NotesListScreen() {
   const { notes, loading, error } = useNotes();
+  const status = useSync();
   const [searchQuery, setSearchQuery] = useState("");
 
   const router = useRouter();
@@ -28,18 +30,12 @@ export default function NotesListScreen() {
     return notes.filter(
       (note) =>
         note.title.toLowerCase().includes(q) ||
-        note.body.toLowerCase().includes(q)
+        note.body.toLowerCase().includes(q),
     );
   }, [notes, searchQuery]);
 
-  const handleAddNote = async () => {
-    console.log("Navigating to create a new note");
+  const handleAddNote = () => {
     router.push(`/note/new`);
-  };
-
-  const handleEditNote = async (id: string) => {
-    console.log(`Navigating to edit note with ID: ${id}`);
-    router.push(`/note/${id}`);
   };
 
   return (
@@ -49,13 +45,19 @@ export default function NotesListScreen() {
         style={{ flex: 1 }}
       >
         <View style={styles.header}>
-          <SyncBadge status="synced" />
+          <SyncBadge status={status} />
         </View>
 
         <View style={styles.content}>
           <SearchBar value={searchQuery} onChangeText={setSearchQuery} />
 
-          {filteredNotes.length === 0 ? (
+          {loading || error ? (
+            <View style={styles.emptyState}>
+              <Text style={styles.emptyText}>
+                {error ?? "Loading notes..."}
+              </Text>
+            </View>
+          ) : filteredNotes.length === 0 ? (
             <View style={styles.emptyState}>
               <Text style={styles.emptyText}>
                 {searchQuery
@@ -65,7 +67,7 @@ export default function NotesListScreen() {
               {!searchQuery && (
                 <TouchableOpacity
                   style={styles.emptyButton}
-                  onPress={() => handleAddNote()}
+                  onPress={handleAddNote}
                 >
                   <Text style={styles.emptyButtonText}>
                     Create your first note
